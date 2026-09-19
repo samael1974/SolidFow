@@ -138,29 +138,38 @@ def _first_command(*names):
     return None
 
 
-COMMANDS = {
-    "coincident": _first_command("Sketcher_ConstrainCoincidentUnified", "Sketcher_ConstrainCoincident"),
-    "point_on": _first_command("Sketcher_ConstrainPointOnObject"),
-    "horizontal": _first_command("Sketcher_ConstrainHorizontal"),
-    "vertical": _first_command("Sketcher_ConstrainVertical"),
-    "horver": _first_command("Sketcher_ConstrainHorVer"),
-    "parallel": _first_command("Sketcher_ConstrainParallel"),
-    "perpendicular": _first_command("Sketcher_ConstrainPerpendicular"),
-    "tangent": _first_command("Sketcher_ConstrainTangent"),
-    "equal": _first_command("Sketcher_ConstrainEqual"),
-    "symmetric": _first_command("Sketcher_ConstrainSymmetric"),
-    "distance": _first_command("Sketcher_ConstrainDistance"),
-    "distance_x": _first_command("Sketcher_ConstrainDistanceX"),
-    "distance_y": _first_command("Sketcher_ConstrainDistanceY"),
-    "radius": _first_command("Sketcher_ConstrainRadius"),
-    "diameter": _first_command("Sketcher_ConstrainDiameter"),
-    "angle": _first_command("Sketcher_ConstrainAngle"),
-    "lock": _first_command("Sketcher_ConstrainLock"),
+COMMAND_CANDIDATES = {
+    "coincident": ("Sketcher_ConstrainCoincidentUnified", "Sketcher_ConstrainCoincident"),
+    "point_on": ("Sketcher_ConstrainPointOnObject",),
+    "horizontal": ("Sketcher_ConstrainHorizontal",),
+    "vertical": ("Sketcher_ConstrainVertical",),
+    "horver": ("Sketcher_ConstrainHorVer",),
+    "parallel": ("Sketcher_ConstrainParallel",),
+    "perpendicular": ("Sketcher_ConstrainPerpendicular",),
+    "tangent": ("Sketcher_ConstrainTangent",),
+    "equal": ("Sketcher_ConstrainEqual",),
+    "symmetric": ("Sketcher_ConstrainSymmetric",),
+    "distance": ("Sketcher_ConstrainDistance",),
+    "distance_x": ("Sketcher_ConstrainDistanceX",),
+    "distance_y": ("Sketcher_ConstrainDistanceY",),
+    "radius": ("Sketcher_ConstrainRadius",),
+    "diameter": ("Sketcher_ConstrainDiameter",),
+    "angle": ("Sketcher_ConstrainAngle",),
+    "lock": ("Sketcher_ConstrainLock",),
 }
+
+# Workbench commands may be registered after addon startup.
+COMMANDS = {}
+
+
+def refresh_commands():
+    for key, names in COMMAND_CANDIDATES.items():
+        COMMANDS[key] = _first_command(*names)
 
 
 def all_constraint_actions():
     """Ordered list used by the 'Altri…' menu."""
+    refresh_commands()
     rows = [
         ("Coincidente / Concentrico", "coincident"),
         ("Punto su oggetto", "point_on"),
@@ -325,6 +334,7 @@ def constraint_suggestions(limit=5):
     No suggestion is applied automatically.  The user confirms by clicking a
     button in the mini-window or S palette.
     """
+    refresh_commands()
     if not constraint_hints_enabled():
         return []
     _sketch, items = selected_geometry_info()

@@ -2,7 +2,7 @@
 ; Built with Inno Setup 6. No administrator privileges required.
 
 #define MyAppName "SolidFlow UX"
-#define MyAppVersion "0.4.0-beta.12"
+#define MyAppVersion "0.4.0-beta.13-test.4"
 #define MyAppPublisher "SolidFlow UX Project"
 #define MyAppURL "https://github.com/samael1974/FREECAD-IMPLEMENTAZIONE-UX"
 
@@ -33,7 +33,7 @@ RestartApplications=no
 SetupLogging=yes
 
 [Files]
-; Consolidated runtime through beta12.
+; Runtime synchronized from the local installation on 2026-09-19.
 Source: "..\SolidFlowUX\Init.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SolidFlowUX\InitGui.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SolidFlowUX\solidflow_ui.py"; DestDir: "{app}"; Flags: ignoreversion
@@ -53,6 +53,9 @@ Source: "..\SolidFlowUX\solidflow_paths.py"; DestDir: "{app}"; Flags: ignorevers
 Source: "..\SolidFlowUX\solidflow_workflows.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SolidFlowUX\solidflow_beta12.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SolidFlowUX\manifest.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\SolidFlowUX\solidflow_diagnostics.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\SolidFlowUX\SolidFlowUX-Diagnostica.FCMacro"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\SolidFlowUX\INSTALLAZIONE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SolidFlowUX\README.txt"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\SolidFlowUX\CHANGELOG.txt"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "SolidFlowUX-preinstall.ps1"; Flags: dontcopy

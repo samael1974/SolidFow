@@ -14,3 +14,9 @@ dist/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local FreeCAD backups and uninstaller files
+_backup/
+SolidFlowUX_Backups/
+unins*.exe
+unins*.dat

@@ -1,0 +1,32 @@
+SolidFlow UX 0.4.0-beta.13-test.4 — 2026-09-19
+- Sincronizzazione dei sorgenti dalla cartella locale fornita dal manutentore.
+- Aggiornati sketch, features, barra vista, bootstrap, UI e Smart Sketch.
+- Aggiunti modulo e macro di diagnostica.
+- Installer allineato ai nuovi file; istruzioni per i tester aggiornate.
+- Esclusi cache, backup locali e disinstallatore già generato.
+- Sintassi verificata; test funzionali FreeCAD da eseguire.
+
+STORICO
+
+SolidFlow UX v0.4.0-beta.3
+- Added Home button below the navigation cube.
+- Home = Axonometric + Fit All.
+- Shift+Home click = Fit All while preserving the current orientation.
+- Keeps all beta.2 face-reference and display-style features.
+
+SolidFlow UX 0.4.0-beta.2
+- Smart Snap: AutoConstraint native tuning and fast drag suggestion delay.
+- Geometry-aware automatic constraint suggestions and clickable cursor hint.
+- Context mini-toolbar for Face/Edge/Sketch/Feature selections.
+- Quick Edit / Instant3D-like live editing for Pad, Pocket and Revolution.
+- Double-click supported Part Design feature in tree to Quick Edit.
+- Closed profile detector/selector with direct Pad/Pocket/Revolution launch.
+- Quick external geometry / Convert Entities command in Sketcher palette.
+- Additive Sweep beta from two selected sketches.
+- Optional mouse gestures beta.
+- Import Assistant vector calibration from known source/target measurement.
+- Preserved v0.3 face sketch, live preview features and import workflow.
+
+- Sketch on face now auto-links the selected face perimeter as Sketcher external geometry.
+- Added deduplicated "Riferimenti faccia" recovery command for mapped sketches.
+- Added always-available display style bar below the navigation cube: Wire, Solido, Bordi, Nascoste, Render, Materiale.

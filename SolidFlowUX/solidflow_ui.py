@@ -707,24 +707,8 @@ def show_palette():
 
 
 def show_diagnostics():
-    status = getattr(App, "__solidflow_status__", {}) or {}
-    lines = [
-        "Core UI: " + VERSION,
-        "FreeCAD: " + ".".join(str(value) for value in App.Version()[:3]),
-        "Context: " + current_context(),
-        "Selection: " + _selection_kind(),
-        "Tasto S: " + str(shortcut_enabled()),
-        "Barra vista: " + str(display_bar_enabled()),
-    ]
-    for key in sorted(status):
-        lines.append("%s: %s" % (key, status[key]))
-    text = "\n".join(lines)
-    App.Console.PrintMessage("[SolidFlow diagnostics]\n" + text + "\n")
-    box = QtWidgets.QMessageBox(_controller.main_window if _controller else Gui.getMainWindow())
-    box.setWindowTitle("SolidFlow Diagnostics")
-    box.setText("Stato moduli SolidFlow")
-    box.setDetailedText(text)
-    box.exec_()
+    from solidflow_diagnostics import show_report
+    show_report()
 
 
 def install():

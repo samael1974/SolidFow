@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""SolidFlow UX GUI bootstrap — beta12 UX stabilization.
+"""SolidFlow UX GUI bootstrap — beta13 installation diagnostics.
 
 The plain ``S`` key is intentionally owned only by ``solidflow_ui``.
 
@@ -10,7 +10,7 @@ Load order:
 4. beta.6 native Sweep / Loft / Helix / Thread Wizard;
 5. beta.7 Mesh Doctor / Appearance Studio integration;
 6. beta11 profile-region picker, interactive Fillet and 3D path workflows;
-7. beta12 UX stabilization (direct regions, external refs, dimensions, shadows).
+7. beta13 installation diagnostics (direct regions, external refs, dimensions, shadows).
 
 Historical beta.4/patterns/beta.9 files remain in the repository for migration
 and comparison but are no longer runtime patch layers.
@@ -20,6 +20,14 @@ import traceback
 
 import FreeCAD as App
 import FreeCADGui as Gui
+
+# Set up compatibility before any UI layer is imported.
+try:
+    from PySide import QtGui, QtWidgets
+    if not hasattr(QtWidgets, "QActionGroup") and hasattr(QtGui, "QActionGroup"):
+        QtWidgets.QActionGroup = QtGui.QActionGroup
+except ImportError:
+    pass
 
 STATUS = {}
 App.__solidflow_status__ = STATUS
@@ -42,7 +50,7 @@ def _load_layer(name, required=False):
         _record(name, module)
         return module
     except ModuleNotFoundError as exc:
-        STATUS[name] = "assente"
+        STATUS[name] = "ERRORE import: " + str(exc)
         message = "SolidFlow: layer %s assente: %s\n" % (name, exc)
         if required:
             App.Console.PrintError(message)
@@ -109,13 +117,6 @@ except Exception as exc:
     App.Console.PrintWarning("SolidFlow: registrazione comandi GUI: %s\n" % exc)
 
 
-try:
-    from PySide import QtGui, QtWidgets
-    if not hasattr(QtWidgets, "QActionGroup") and hasattr(QtGui, "QActionGroup"):
-        QtWidgets.QActionGroup = QtGui.QActionGroup
-except Exception:
-    pass
-
 _load_layer("solidflow_sketch", required=True)
 _load_layer("solidflow_beta5")
 _load_layer("solidflow_beta6")
@@ -125,5 +126,17 @@ _load_layer("solidflow_workflows", required=True)
 _load_layer("solidflow_beta12", required=True)
 
 App.Console.PrintMessage(
-    "SolidFlow beta12 bootstrap: %s\nLayer: %s\n" % (__file__, STATUS)
+    "SolidFlow beta13 bootstrap: %s\nLayer: %s\n" % (__file__, STATUS)
 )
+
+# Remains reachable even if the main UI fails to import. The standalone macro
+# provides the same report if this bootstrap itself could not run.
+try:
+    import solidflow_diagnostics
+    if _BASE_UI is None:
+        window = Gui.getMainWindow()
+        if window is not None:
+            recovery_menu = window.menuBar().addMenu("SolidFlow (diagnostica)")
+            recovery_menu.addAction("Diagnostica installazione…", solidflow_diagnostics.show_report)
+except Exception as exc:
+    App.Console.PrintError("SolidFlow diagnostica: %s\n" % exc)

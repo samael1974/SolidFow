@@ -2,6 +2,33 @@
 
 SolidFlow UX è un'estensione UX per FreeCAD 1.1.x pensata per rendere Sketcher e Part Design più rapidi, contestuali e vicini a un flusso di lavoro CAD moderno.
 
+## Aggiornamento per i tester — 19 settembre 2026
+
+Versione del pacchetto: **0.4.0-beta.13-test.4**. I sorgenti Python e la macro
+diagnostica provengono dalla cartella locale SolidFlowUX del manutentore.
+Sono aggiornati sketch, features, barra vista e diagnostica. Cache, backup
+locali e disinstallatore non fanno parte dei sorgenti distribuiti.
+
+Il setup viene generato dalla procedura GitHub Actions dopo l'aggiornamento.
+Scaricare la release **v0.4.0-beta.13-test.4** quando il relativo EXE è disponibile.
+Le release precedenti contengono versioni precedenti del programma.
+
+Prima di aggiornare, chiudere FreeCAD e conservare una copia della cartella
+SolidFlowUX fuori da `Mod`. La sintassi Python è stata controllata;
+questo non sostituisce una prova funzionale dentro FreeCAD.
+
+### Installazione manuale e feedback
+
+Con **Code > Download ZIP**, estrarre e copiare soltanto la sottocartella
+`SolidFlowUX` nella cartella `Mod` del profilo FreeCAD utilizzato.
+Consultare [le istruzioni di installazione e prova](SolidFlowUX/INSTALLAZIONE.txt).
+Questa distribuzione non include una macro di installazione.
+
+Segnalare i problemi nelle [Issues](https://github.com/samael1974/FREECAD-IMPLEMENTAZIONE-UX/issues),
+indicando versione FreeCAD, sistema operativo, passaggi, risultato atteso,
+risultato ottenuto e rapporto di **SolidFlow > Diagnostica SolidFlow**.
+Se il menu non compare, eseguire `SolidFlowUX-Diagnostica.FCMacro`.
+
 ## Installazione consigliata
 
 Per l'utente normale non è necessario copiare file, usare PowerShell o conoscere la cartella `Mod`.

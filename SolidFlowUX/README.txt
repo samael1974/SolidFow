@@ -1,0 +1,43 @@
+SolidFlow UX 0.4.0-beta.13-test.4 — versione sperimentale per tester
+
+Requisito: FreeCAD 1.1.x. SolidFlow è un componente aggiuntivo, non un
+programma separato e non compare come nuovo workbench.
+
+INSTALLAZIONE WINDOWS
+1. Scarica il setup della release v0.4.0-beta.13-test.4 da:
+   https://github.com/samael1974/FREECAD-IMPLEMENTAZIONE-UX/releases
+2. Chiudi FreeCAD e conserva una copia della cartella SolidFlowUX esistente
+   fuori dalla cartella Mod prima di sostituirla.
+3. Esegui il setup. Il percorso predefinito è:
+   %APPDATA%\FreeCAD\v1-1\Mod\SolidFlowUX
+4. Riapri FreeCAD, cerca il menu SolidFlow e premi S nella vista 3D.
+
+INSTALLAZIONE MANUALE / PROFILI PERSONALIZZATI
+Scarica Code > Download ZIP da GitHub ed estrai l'archivio.
+Copia soltanto la sottocartella SolidFlowUX nella cartella Mod del profilo
+FreeCAD effettivamente utilizzato, dopo aver chiuso FreeCAD e spostato
+la versione precedente fuori da Mod. Non copiare tutta la repository
+come componente aggiuntivo e non lasciare due copie dentro Mod.
+Questo aggiornamento non include la macro SolidFlowUX-Installa.FCMacro.
+
+DIAGNOSTICA E PROVA BREVE
+Se il menu è presente: SolidFlow > Diagnostica SolidFlow.
+Altrimenti apri SolidFlowUX-Diagnostica.FCMacro da FreeCAD ed eseguila
+tramite il menu Macro. Copia il rapporto e allegalo alla segnalazione.
+Prova: avvio, palette S, nuovo sketch, quote/vincoli, griglia e zoom,
+estrusione, modifica quota, salvataggio e riapertura del documento.
+Indica OK/ERRORE per ogni passaggio.
+
+SEGNALAZIONI
+https://github.com/samael1974/FREECAD-IMPLEMENTAZIONE-UX/issues
+Includi versione del pacchetto, versione FreeCAD, sistema operativo,
+passaggi per riprodurre il problema, risultato atteso ed effettivo,
+screenshot e diagnostica. Rimuovi dati personali dal rapporto.
+
+RIPRISTINO
+Chiudi FreeCAD, sposta la versione corrente fuori da Mod e rimetti
+al suo posto la copia precedente.
+
+VERIFICHE
+Controllata la sintassi dei sorgenti Python e della macro diagnostica.
+Il funzionamento grafico e CAD deve essere verificato in FreeCAD.
