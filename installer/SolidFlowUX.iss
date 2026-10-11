@@ -2,7 +2,7 @@
 ; Built with Inno Setup 6. No administrator privileges required.
 
 #define MyAppName "SolidFlow UX"
-#define MyAppVersion "0.4.0-beta.13-test.4"
+#define MyAppVersion "0.4.0-beta.13-test.5"
 #define MyAppPublisher "SolidFlow UX Project"
 #define MyAppURL "https://github.com/samael1974/FREECAD-IMPLEMENTAZIONE-UX"
 

@@ -1,11 +1,11 @@
-SolidFlow UX 0.4.0-beta.13-test.4 — versione sperimentale per tester
+SolidFlow UX 0.4.0-beta.13-test.5 — versione sperimentale per tester
 
 Requisito: FreeCAD 1.1.x. SolidFlow è un componente aggiuntivo, non un
 programma separato e non compare come nuovo workbench.
 
 INSTALLAZIONE WINDOWS
-1. Scarica il setup della release v0.4.0-beta.13-test.4 da:
-   https://github.com/samael1974/FREECAD-IMPLEMENTAZIONE-UX/releases
+1. Dopo la pubblicazione, scarica il setup della release v0.4.0-beta.13-test.5 da:
+   https://github.com/samael1974/SolidFow/releases
 2. Chiudi FreeCAD e conserva una copia della cartella SolidFlowUX esistente
    fuori dalla cartella Mod prima di sostituirla.
 3. Esegui il setup. Il percorso predefinito è:
@@ -29,7 +29,7 @@ estrusione, modifica quota, salvataggio e riapertura del documento.
 Indica OK/ERRORE per ogni passaggio.
 
 SEGNALAZIONI
-https://github.com/samael1974/FREECAD-IMPLEMENTAZIONE-UX/issues
+https://github.com/samael1974/SolidFow/issues
 Includi versione del pacchetto, versione FreeCAD, sistema operativo,
 passaggi per riprodurre il problema, risultato atteso ed effettivo,
 screenshot e diagnostica. Rimuovi dati personali dal rapporto.

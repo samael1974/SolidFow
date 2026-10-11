@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - 'SolidFlowUX/**/*.py'
+      - 'tests/**'
       - '.github/workflows/python-syntax.yml'
   pull_request:
     paths:
       - 'SolidFlowUX/**/*.py'
+      - 'tests/**'
 
 jobs:
   pycompile:
@@ -22,3 +24,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Compile SolidFlow sources
         run: python -m py_compile SolidFlowUX/*.py
+
+      - name: Run headless UX regressions
+        run: python -m unittest discover -s tests -v

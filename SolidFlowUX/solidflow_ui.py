@@ -43,7 +43,7 @@ from solidflow_smart import (
     smart_snap_enabled,
 )
 
-VERSION = "0.4.0-beta.10-core"
+VERSION = "0.4.0-beta.13-test.5-ux"
 PREF_PATH = "User parameter:BaseApp/Preferences/Mod/SolidFlowUX"
 _controller = None
 _menu = None
@@ -97,6 +97,9 @@ def auto_mini_toolbar_enabled():
 def set_auto_mini_toolbar_enabled(value):
     _prefs().SetBool("AutoMiniToolbar", bool(value))
     if _controller:
+        if not value:
+            _controller.selection_timer.stop()
+            _controller.mini.hide()
         _controller.sync_menu_state()
 
 
@@ -165,8 +168,34 @@ def _command_action(name):
         return None
 
 
+def _spec_enabled(spec):
+    # Callback wrappers intentionally prepare their own context (e.g. leave
+    # sketch edit mode before Pad). Their icon command is not a prerequisite.
+    if spec.callback:
+        return True
+    if not spec.command or _command_object(spec.command) is None:
+        return False
+    action = _command_action(spec.command)
+    return bool(action is not None and action.isEnabled())
+
+
+def _place_near_cursor(widget, offset_x=18, offset_y=20):
+    cursor = QtGui.QCursor.pos()
+    screen = QtWidgets.QApplication.screenAt(cursor) or QtWidgets.QApplication.primaryScreen()
+    x, y = cursor.x() + offset_x, cursor.y() + offset_y
+    if screen:
+        area = screen.availableGeometry()
+        x = max(area.left() + 8, min(x, area.right() - widget.width() - 8))
+        y = max(area.top() + 8, min(y, area.bottom() - widget.height() - 8))
+    widget.move(x, y)
+
+
 def _run_spec(spec):
     try:
+        if not _spec_enabled(spec):
+            Gui.getMainWindow().statusBar().showMessage(
+                "SolidFlow: %s non disponibile per la selezione corrente." % spec.label, 5000)
+            return
         if spec.callback:
             spec.callback()
         elif spec.command:
@@ -198,7 +227,7 @@ def _selection_kind():
     if sketch and not _is_sketch_edit_mode():
         return "SketchEdges" if subs else "Sketch"
     sketches = selected_sketch_objects()
-    if len(sketches) == 2:
+    if len(sketches) == 2 and len(selection_snapshot()) == 2:
         return "TwoSketches"
     sel = selection_snapshot()
     if not sel:
@@ -291,6 +320,10 @@ def _sketch_groups():
         ActionSpec("Rettangolo", "Sketcher_CreateRectangle"),
         ActionSpec("Cerchio", "Sketcher_CreateCircle"),
         ActionSpec("Polilinea", "Sketcher_CreatePolyline"),
+        ActionSpec("Rifila", "Sketcher_Trimming", tooltip="Taglia una porzione di geometria dello schizzo"),
+        ActionSpec("Costruzione", "Sketcher_ToggleConstruction", tooltip="Alterna geometria normale e di costruzione"),
+        ActionSpec("Quote e vincoli…", callback=_show_more_sketch_tools,
+                   tooltip="Accesso stabile a quote, vincoli e riferimenti esterni"),
     ]
 
     smart = _smart_constraint_specs()
@@ -334,8 +367,8 @@ def _partdesign_groups():
         smart = [
             ActionSpec("Schizzo su faccia", callback=create_sketch_on_face, icon_command="PartDesign_NewSketch", emphasis=True),
             ActionSpec("Fillet Doctor", callback=_fillet_best, icon_command="PartDesign_Fillet"),
-            ActionSpec("Chamfer", "PartDesign_Chamfer"),
-            ActionSpec("Hole", "PartDesign_Hole"),
+            ActionSpec("Smusso", "PartDesign_Chamfer"),
+            ActionSpec("Foro", "PartDesign_Hole"),
         ]
     elif kind in ("Sketch", "SketchEdges"):
         smart = [
@@ -353,7 +386,7 @@ def _partdesign_groups():
     elif kind == "Edge":
         smart = [
             ActionSpec("Fillet Doctor", callback=_fillet_best, icon_command="PartDesign_Fillet"),
-            ActionSpec("Chamfer", "PartDesign_Chamfer"),
+            ActionSpec("Smusso", "PartDesign_Chamfer"),
         ]
     elif kind == "Feature":
         smart = [
@@ -361,7 +394,7 @@ def _partdesign_groups():
             ActionSpec("Serie lineare 3D", command=PD_LINEAR, icon_command=PD_LINEAR, tooltip="Serie lungo X/Y/Z o riferimento"),
             ActionSpec("Serie polare 3D", command=PD_POLAR, icon_command=PD_POLAR, tooltip="Serie attorno a un asse/riferimento"),
             ActionSpec("Fillet Doctor", callback=_fillet_best, icon_command="PartDesign_Fillet"),
-            ActionSpec("Chamfer", "PartDesign_Chamfer"),
+            ActionSpec("Smusso", "PartDesign_Chamfer"),
         ]
     else:
         smart = [
@@ -446,7 +479,11 @@ class ShortcutPalette(QtWidgets.QFrame):
         self.host = QtWidgets.QWidget()
         self.content = QtWidgets.QVBoxLayout(self.host)
         self.content.setContentsMargins(0, 0, 0, 0)
-        self.outer.addWidget(self.host)
+        self.scroll = QtWidgets.QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.scroll.setWidget(self.host)
+        self.outer.addWidget(self.scroll)
 
     def _clear(self):
         while self.content.count():
@@ -473,7 +510,10 @@ class ShortcutPalette(QtWidgets.QFrame):
             button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
             button.setIconSize(QtCore.QSize(28, 28))
             button.setProperty("solidflowSuggested", bool(spec.emphasis))
-            button.setToolTip(spec.tooltip)
+            enabled = _spec_enabled(spec)
+            button.setEnabled(enabled)
+            button.setToolTip(spec.tooltip or (spec.label if enabled else
+                "Non disponibile: verifica documento, selezione e operazione in corso."))
             action = _command_action(spec.command or spec.icon_command)
             if action:
                 try:
@@ -495,19 +535,24 @@ class ShortcutPalette(QtWidgets.QFrame):
         title_a, stable, title_b, smart = _groups_for_context(context)
         self._section(title_a, stable)
         self._section(title_b, smart)
-        self.adjustSize()
+        self._section("DOCUMENTO", [
+            ActionSpec("Salva", "Std_Save"),
+            ActionSpec("Annulla", "Std_Undo"),
+            ActionSpec("Ripeti", "Std_Redo"),
+            ActionSpec("Esporta…", "Std_Export", tooltip="Esporta la selezione usando i formati disponibili in FreeCAD"),
+        ])
+        self.content.activate()
+        desired = self.host.sizeHint()
+        screen = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos()) or QtWidgets.QApplication.primaryScreen()
+        width, height = desired.width() + 44, desired.height() + 70
+        if screen:
+            area = screen.availableGeometry()
+            width, height = min(width, area.width() - 16), min(height, area.height() - 16)
+        self.resize(max(1, width), max(1, height))
 
     def show_near_cursor(self):
         self.rebuild()
-        cursor = QtGui.QCursor.pos()
-        self.adjustSize()
-        screen = QtWidgets.QApplication.screenAt(cursor) or QtWidgets.QApplication.primaryScreen()
-        x, y = cursor.x() + 38, cursor.y() + 30
-        if screen:
-            area = screen.availableGeometry()
-            x = max(area.left() + 8, min(x, area.right() - self.width() - 8))
-            y = max(area.top() + 8, min(y, area.bottom() - self.height() - 8))
-        self.move(x, y)
+        _place_near_cursor(self, 38, 30)
         self.show()
         self.raise_()
         self.activateWindow()
@@ -521,10 +566,23 @@ class ContextMiniToolbar(QtWidgets.QFrame):
         self.setAttribute(QtCore.Qt.WA_ShowWithoutActivating, True)
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.setContentsMargins(4, 4, 4, 4)
+        self.hide_timer = QtCore.QTimer(self)
+        self.hide_timer.setSingleShot(True)
+        self.hide_timer.timeout.connect(self.hide)
+
+    def _trigger(self, spec):
+        self.hide_timer.stop()
+        self.hide()
+        QtCore.QTimer.singleShot(0, lambda: _run_spec(spec))
 
     def show_for_selection(self):
+        self.hide_timer.stop()
         self.hide()
         if not auto_mini_toolbar_enabled() or _is_sketch_edit_mode():
+            return
+        app = QtWidgets.QApplication.instance()
+        if (not Gui.ActiveDocument or not app or app.activeModalWidget() is not None
+                or app.activePopupWidget() is not None or Gui.Control.activeDialog()):
             return
         while self.layout.count():
             widget = self.layout.takeAt(0).widget()
@@ -535,23 +593,27 @@ class ContextMiniToolbar(QtWidgets.QFrame):
         if kind == "Face":
             specs = [ActionSpec("Sketch", callback=create_sketch_on_face), ActionSpec("Fillet", callback=_fillet_best)]
         elif kind == "Edge":
-            specs = [ActionSpec("Fillet", callback=_fillet_best), ActionSpec("Chamfer", "PartDesign_Chamfer")]
+            specs = [ActionSpec("Fillet", callback=_fillet_best), ActionSpec("Smusso", "PartDesign_Chamfer")]
         elif kind in ("Sketch", "SketchEdges"):
             specs = [ActionSpec("Pad", callback=launch_pad), ActionSpec("Pocket", callback=launch_pocket), ActionSpec("Rivolvi", callback=_launch_rev_best)]
         elif kind == "Feature":
-            specs = [ActionSpec("Modifica", callback=launch_edit_selected_feature), ActionSpec("Serie 3D", command=PD_LINEAR), ActionSpec("Fillet", callback=_fillet_best)]
+            specs = [ActionSpec("Serie 3D", command=PD_LINEAR), ActionSpec("Raccordo", callback=_fillet_best)]
+            if selected_editable_feature() is not None:
+                specs.insert(0, ActionSpec("Modifica", callback=launch_edit_selected_feature))
         if not specs:
             return
         for spec in specs:
             button = QtWidgets.QToolButton()
             button.setText(spec.label)
-            button.clicked.connect(lambda _checked=False, current=spec: _run_spec(current))
+            button.setEnabled(_spec_enabled(spec))
+            button.setToolTip(spec.tooltip or spec.label)
+            button.clicked.connect(lambda _checked=False, current=spec: self._trigger(current))
             self.layout.addWidget(button)
         self.adjustSize()
-        self.move(QtGui.QCursor.pos() + QtCore.QPoint(18, 20))
+        _place_near_cursor(self)
         self.show()
         self.raise_()
-        QtCore.QTimer.singleShot(3500, self.hide)
+        self.hide_timer.start(3500)
 
 
 class _SelectionObserver:
@@ -663,6 +725,7 @@ class SolidFlowController(QtCore.QObject):
                 action.blockSignals(old)
 
     def selection_changed(self):
+        self.mini.hide()
         self.selection_timer.start(150)
 
     def eventFilter(self, watched, event):

@@ -2,15 +2,22 @@
 
 SolidFlow UX è un'estensione UX per FreeCAD 1.1.x pensata per rendere Sketcher e Part Design più rapidi, contestuali e vicini a un flusso di lavoro CAD moderno.
 
-## Aggiornamento per i tester — 19 settembre 2026
+## Aggiornamento UX — 11 ottobre 2026
 
-Versione del pacchetto: **0.4.0-beta.13-test.4**. I sorgenti Python e la macro
+Revisione **test.5**: stato comandi, mini-toolbar, palette scorrevole e accessi
+rapidi per Sketcher e documento. Vedere [analisi e piano di collaudo](docs/UX_REVIEW_2026-10-11.md).
+Test automatici headless superati; collaudo FreeCAD 1.1/Windows ancora necessario.
+Il setup test.5 sarà disponibile solo dopo integrazione e build della release.
+
+## Base del pacchetto — 19 settembre 2026
+
+Versione del pacchetto: **0.4.0-beta.13-test.5**. I sorgenti Python e la macro
 diagnostica provengono dalla cartella locale SolidFlowUX del manutentore.
 Sono aggiornati sketch, features, barra vista e diagnostica. Cache, backup
 locali e disinstallatore non fanno parte dei sorgenti distribuiti.
 
 Il setup viene generato dalla procedura GitHub Actions dopo l'aggiornamento.
-Scaricare la release **v0.4.0-beta.13-test.4** quando il relativo EXE è disponibile.
+Scaricare la release **v0.4.0-beta.13-test.5** quando il relativo EXE è disponibile.
 Le release precedenti contengono versioni precedenti del programma.
 
 Prima di aggiornare, chiudere FreeCAD e conservare una copia della cartella
@@ -24,7 +31,7 @@ Con **Code > Download ZIP**, estrarre e copiare soltanto la sottocartella
 Consultare [le istruzioni di installazione e prova](SolidFlowUX/INSTALLAZIONE.txt).
 Questa distribuzione non include una macro di installazione.
 
-Segnalare i problemi nelle [Issues](https://github.com/samael1974/FREECAD-IMPLEMENTAZIONE-UX/issues),
+Segnalare i problemi nelle [Issues](https://github.com/samael1974/SolidFow/issues),
 indicando versione FreeCAD, sistema operativo, passaggi, risultato atteso,
 risultato ottenuto e rapporto di **SolidFlow > Diagnostica SolidFlow**.
 Se il menu non compare, eseguire `SolidFlowUX-Diagnostica.FCMacro`.
